@@ -137,7 +137,7 @@ FRONTEND_CFLAGS=""
 FRONTEND_LIBS=""
 
 AC_ARG_WITH([gtk],
-            [AS_HELP_STRING([--with-gtk],[use GTK front-end (experimental)])],
+            [AS_HELP_STRING([--with-gtk],[use GTK front-end (default)])],
             [with_GTK=yes],
             [with_GTK=no])
 
@@ -147,19 +147,19 @@ AC_ARG_WITH([Xaw3d],
             [with_Xaw3d=no])
 
 AC_ARG_WITH([Xaw],
-            [AS_HELP_STRING([--with-Xaw],[use Xaw front-end (default)])],
+            [AS_HELP_STRING([--with-Xaw],[use Xaw front-end])],
             [with_Xaw=yes],
             [with_Xaw=no])
 
-dnl | check for libraries
-if test x"$with_GTK" = x"yes" ; then
-  PKG_CHECK_MODULES([GTK], [ gtk+-2.0 >= 2.16.0 gmodule-2.0 ])
+dnl | check for GTK+
+if test x"$with_Xaw" = x"no" -a x"$with_Xaw3d" = x"no" ; then
+  with_GTK=yes
+  PKG_CHECK_MODULES([GTK], [ gtk+-2.0 >= 2.18.0 gmodule-2.0 ])
   FRONTEND_CFLAGS=$GTK_CFLAGS
   FRONTEND_LIBS=$GTK_LIBS
 fi
 
-if test x"$with_GTK" = x"no" ; then
-
+if test x"$with_Xaw" = x"yes" -o x"$with_Xaw3d" = x"yes" ; then
 dnl | general check for Xaw and Xaw3d
   AC_PATH_XTRA
   if test -n "$no_x" ; then
@@ -190,9 +190,8 @@ dnl | check availability of Xaw3d
                     [AC_MSG_ERROR([--with-Xaw3d was given, but test for Xaw3d failed. Make sure that you have Xaw3d installed, else you might want to try the configure option --without-Xaw3d])],
 			       [-lXaw])])
 
-dnl | no Xaw3d, check for Xaw; make it the default
-  if test x"$with_Xaw3d" = x"no" ; then
-     with_Xaw=yes
+dnl | check for Xaw
+  if test x"$with_Xaw" = x"yes" ; then
      save_cflags="$CFLAGS"
      save_cppflags="$CPPFLAGS"
      CFLAGS="$CFLAGS $X_CFLAGS"
